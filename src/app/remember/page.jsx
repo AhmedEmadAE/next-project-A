@@ -21,7 +21,7 @@ const STEPS = [
         number: 3,
         title: 'استلم التذكيرات',
         description: 'احصل على إشعار بقرب انتهاء الكمية المتاحة',
-        icon: faBell, // Assuming a bell icon for notifications
+        icon: faBell,
     },
 ];
 
@@ -111,18 +111,10 @@ export default function Home() {
             showNotification('لا توجد أدوية مسجلة لطلبها', 'error');
             return;
         }
-
-        // هنا يمكنك إضافة منطقك الخاص. على سبيل المثال:
-        // عرض رسالة تذكير بأنه يجب تعديل البيانات يدوياً
+    
         showNotification('يرجى تعديل بيانات الدواء يدوياً لإضافة كمية جديدة.', 'warning');
 
-        // لفتح وضع التعديل لأول دواء في القائمة تلقائياً:
         handleEdit(0);
-
-        // أو يمكنك ببساطة إزالة جميع الأدوية لتبدأ من جديد:
-        // setMedications([]);
-        // localStorage.removeItem('medications');
-        // showNotification('تم حذف جميع الأدوية. قم بإضافة الأدوية الجديدة.', 'success');
     };
 
     return (
@@ -241,3 +233,4 @@ export default function Home() {
     );
 
 }
+
