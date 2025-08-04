@@ -130,7 +130,7 @@ export default function Home() {
             <header className={styles.header}>
                 <h1 className={styles.h1}>نظام التذكير الآلي للأدوية</h1>
                 <p className={styles.headerDescription}>
-                    صيدليات آدم توفر لك خدمة التذكير الآلي بقرب انتهاء كمية الدواء المزمن لضمان طلب كمية إضافية في الوقت المناسب.
+                    صيدليات Pharamcare توفر لك خدمة التذكير الآلي بقرب انتهاء كمية الدواء المزمن لضمان طلب كمية إضافية في الوقت المناسب.
                 </p>
             </header>
 
@@ -239,4 +239,5 @@ export default function Home() {
             )}
         </div>
     );
+
 }
