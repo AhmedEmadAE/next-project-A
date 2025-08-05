@@ -545,3 +545,21 @@
         padding: 15px;
     }
 }
+
+
+/* زر إلغاء الطلب داخل السلة */
+.cartCancelBtn {
+    background-color: var(--cancel-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cartCancelBtn:hover {
+    background-color: #c1121f;
+}
