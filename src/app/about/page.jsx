@@ -11,7 +11,6 @@ export default function MedicalFormulations() {
     const [confirmationMessage, setConfirmationMessage] = useState('');
     const [showCart, setShowCart] = useState(false);
     const [productQuantities, setProductQuantities] = useState({});
-
     const recipesData = {
         'hair-care': {
             title: 'تركيبات طبية للعناية بالشعر',
@@ -245,7 +244,6 @@ export default function MedicalFormulations() {
             ]
         }
     };
-
     // تهيئة كميات المنتجات عند تغيير الفئة
     useEffect(() => {
         if (currentCategory && recipesData[currentCategory]) {
@@ -271,16 +269,17 @@ export default function MedicalFormulations() {
         }));
     };
 
-    // عرض رسالة التأكيد
+    // عرض رسالة التأكيد وإضافة المنتج إلى السلة
     const handleShowConfirmation = (productName, productId) => {
         const quantity = productQuantities[productId] || 1;
+        const productPrice = getProductPrice(productId);
         const newCartItems = { ...cartItems };
 
         if (!newCartItems[productId]) {
             newCartItems[productId] = {
                 name: productName,
                 quantity: quantity,
-                price: getProductPrice(productId)
+                price: productPrice
             };
         } else {
             newCartItems[productId].quantity += quantity;
@@ -302,7 +301,7 @@ export default function MedicalFormulations() {
         for (const category in recipesData) {
             const product = recipesData[category].formulations.find(p => p.id === productId);
             if (product) {
-                return parseInt(product.price.split(' ')[0]);
+                return parseFloat(product.price.split(' ')[0]);
             }
         }
         return 0;
@@ -328,7 +327,7 @@ export default function MedicalFormulations() {
     // تحديث عرض السلة
     const renderCartItems = () => {
         if (Object.keys(cartItems).length === 0) {
-            return <p style={{ textAlign: 'center', color: '#6c757d' }}>سلة التسوق فارغة</p>;
+            return <p className={styles.placeholder}>سلة التسوق فارغة</p>;
         }
 
         let total = 0;
@@ -343,11 +342,17 @@ export default function MedicalFormulations() {
                             <div className={styles.cartItemInfo}>
                                 <div className={styles.cartItemName}>{item.name}</div>
                                 <div className={styles.cartItemPrice}>{item.price} ج.م</div>
+                                <div className={styles.cartItemQuantity}>
+                                    <span>الكمية: {item.quantity}</span>
+                                </div>
                             </div>
-                            <div className={styles.cartItemQuantity}>
-                                <span>{item.quantity}</span>
-                            </div>
-                            <div className={styles.cartItemTotal}>{itemTotal} ج.م</div>
+                            {/* تم استبدال السعر بزر "إلغاء الطلب" */}
+                            <button
+                                className={styles.cartCancelBtn}
+                                onClick={() => handleCancelOrder(id)}
+                            >
+                                إلغاء
+                            </button>
                         </div>
                     );
                 })}
@@ -360,18 +365,39 @@ export default function MedicalFormulations() {
 
     return (
         <div dir="rtl" className={styles.container}>
-            {/* سلة التسوق */}
+            {/* زر السلة العائم */}
             <div className={styles.cartIcon} onClick={() => setShowCart(true)}>
                 🛒
                 <span className={styles.cartCount}>{updateCart()}</span>
+            </div>
+
+            {/* سلة التسوق (نافذة منبثقة) */}
+            <div className={`${styles.cartOverlay} ${showCart ? styles.show : ''}`}>
+                <div className={styles.cartBox}>
+                    <div className={styles.cartHeader}>
+                        <div className={styles.cartTitle}>سلة التسوق</div>
+                        <button onClick={() => setShowCart(false)} className={styles.closeCart}>&times;</button>
+                    </div>
+                    <div className={styles.cartItems}>
+                        {renderCartItems()}
+                    </div>
+                </div>
+            </div>
+
+            {/* رسالة تأكيد الطلب (نافذة منبثقة) */}
+            <div className={`${styles.confirmationOverlay} ${showConfirmation ? styles.show : ''}`}>
+                <div className={`${styles.confirmationBox} ${showConfirmation ? styles.show : ''}`}>
+                    <div className={styles.confirmationIcon}>✅</div>
+                    <h3 className={styles.confirmationTitle}>تمت عملية الشراء بنجاح!</h3>
+                    <p className={styles.confirmationMessage}>{confirmationMessage}</p>
+                    <button onClick={() => setShowConfirmation(false)} className={styles.confirmationBtn}>إغلاق</button>
+                </div>
             </div>
 
             <div className={styles.container}>
                 <header className={styles.pageHeader}>
                     <h1>التركيبات الطبية</h1>
                     <p>اكتشف تركيبات الصيدلية المصممة خصيصًا لتلبية احتياجاتك الطبية والجمالية</p>
-
-                    {/* أزرار الفئات */}
                     <div className={styles.categoriesContainer}>
                         <div className={styles.categoriesSidebar}>
                             <button
@@ -395,8 +421,6 @@ export default function MedicalFormulations() {
                         </div>
                     </div>
                 </header>
-
-                {/* منطقة عرض المحتوى */}
                 <main className={styles.productsArea} id="content-area">
                     {!currentCategory ? (
                         <>
@@ -413,11 +437,9 @@ export default function MedicalFormulations() {
 
                                     return (
                                         <div key={formulation.id} className={`${styles.productCard} ${isOrdered ? styles.ordered : ''}`}>
-                                            {isOrdered && <span className={styles.orderedBadge}>تم الطلب</span>}
                                             <h3>{formulation.name}</h3>
                                             <div className={styles.productPrice}>{formulation.price}</div>
                                             <p className={styles.description}>{formulation.description}</p>
-
                                             <div className={styles.ingredientsSection}>
                                                 <h4>المكونات الرئيسية</h4>
                                                 <ul className={styles.ingredientsList}>
@@ -426,12 +448,10 @@ export default function MedicalFormulations() {
                                                     ))}
                                                 </ul>
                                             </div>
-
                                             <div className={styles.usageSection}>
                                                 <h4>طريقة الاستخدام</h4>
                                                 <p className={styles.usageText}>{formulation.usage}</p>
                                             </div>
-
                                             <div className={styles.productActions}>
                                                 {!isOrdered ? (
                                                     <>
@@ -487,9 +507,6 @@ export default function MedicalFormulations() {
                     )}
                 </main>
             </div>
-
-
-
         </div>
     );
 }
